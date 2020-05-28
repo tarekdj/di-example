@@ -1,5 +1,5 @@
 <?php
-require('Mailer.php');
+require('MailerWrapper.php');
 
 class Article {
   protected $title;
@@ -65,7 +65,7 @@ class MailingList {
  * MAIN PROGRAM
  */
 // Init the mailer.
-$mailer = new Mailer();
+$mailer = new MailerWrapper();
 
 // Process the mailing list.
 $list = [
