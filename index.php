@@ -1,5 +1,5 @@
 <?php
-require('Mailer.php');
+require('MailerPro.php');
 
 class Article {
   protected $title;
@@ -11,8 +11,9 @@ class Article {
   }
 
   public function notifyAdmin() {
-    $mailer = new Mailer();
-    $mailer->send('admin@mywebsite.site', 'Post has been saved!');
+    $mailer = new MailerPro();
+    $mailer->setMessage('Post has been saved!');
+    $mailer->sendEmail('admin@mywebsite.site');
   }
 
   public function save() {
@@ -31,9 +32,10 @@ class User {
 
     $activation_link = 'activation link';
 
-    $mailer = new Mailer();
+    $mailer = new MailerPro();
+    $mailer->setMessage($activation_link);
     // Send the activation link
-    $mailer->send($email, $activation_link);
+    $mailer->sendEmail($email);
   }
 }
 
@@ -45,12 +47,13 @@ class MailingList {
   public function __construct($list, $message) {
     $this->list = $list;
     $this->message = $message;
-    $this->mailer = new Mailer;
+    $this->mailer = new MailerPro();
   }
 
   public function process() {
+    $this->mailer->setMessage($this->message);
     foreach($this->list as $email) {
-      $this->mailer->send($email, $this->message);
+      $this->mailer->sendEmail($email);
     }
   }
 }
