@@ -4,15 +4,16 @@ require('Mailer.php');
 class Article {
   protected $title;
   protected $body;
+  protected $mailer;
 
-  public function __construct($title, $body) {
+  public function __construct($title, $body, MailerInterface $mailer) {
     $this->title = $title;
     $this->body = $body;
+    $this->mailer = $mailer;
   }
 
   public function notifyAdmin() {
-    $mailer = new Mailer();
-    $mailer->send('admin@mywebsite.site', 'Post has been saved!');
+    $this->mailer->send('admin@mywebsite.site', 'Post has been saved!');
   }
 
   public function save() {
@@ -25,15 +26,20 @@ class Article {
 }
 
 class User {
+  protected $mailer;
+
+  public function __construct(MailerInterface $mailer) {
+    $this->mailer = $mailer;
+  }
+
   public function register($email, $password) {
     // Logic to save the user
     // ...
 
     $activation_link = 'activation link';
 
-    $mailer = new Mailer();
     // Send the activation link
-    $mailer->send($email, $activation_link);
+    $this->mailer->send($email, $activation_link);
   }
 }
 
@@ -42,10 +48,10 @@ class MailingList {
   protected $mailer;
   protected $message;
 
-  public function __construct($list, $message) {
+  public function __construct($list, $message, MailerInterface $mailer) {
     $this->list = $list;
     $this->message = $message;
-    $this->mailer = new Mailer;
+    $this->mailer = $mailer;
   }
 
   public function process() {
@@ -58,6 +64,8 @@ class MailingList {
 /**
  * MAIN PROGRAM
  */
+// Init the mailer.
+$mailer = new Mailer();
 
 // Process the mailing list.
 $list = [
@@ -67,13 +75,13 @@ $list = [
 ];
 
 $message = 'Hi! This is my message';
-$ml = new MailingList($list, $message);
+$ml = new MailingList($list, $message, $mailer);
 $ml->process();
 
 // Save a new article.
-$my_post = new Article('title', 'hello world');
+$my_post = new Article('title', 'hello world', $mailer);
 $my_post->save();
 
 // Send activation link.
-$user = new User();
+$user = new User($mailer);
 $user->register('user@example.site', 'MY_PASSWORD');
